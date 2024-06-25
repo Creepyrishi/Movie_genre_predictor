@@ -1,1 +1,4 @@
 movies_metadata.csv
+flask_app/model.pkl
+flask_app/ohe.pkl
+flask_app/vect.pkl

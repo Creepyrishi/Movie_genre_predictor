@@ -7,22 +7,19 @@ from sklearn.feature_extraction.text  import TfidfVectorizer
 import pandas as pd
 app = Flask(__name__)
 
-with open('flask_app/vectorizer.pkl', 'rb') as f:
-    vect = pickle.load(f)
-model = pickle.load(open('flask_app/model.plk', 'rb'))
-
+vect = pickle.load(open('flask_app/vect.pkl', 'rb'))
+model = pickle.load(open('flask_app/model.pkl', 'rb'))
+ohe = pickle.load(open('flask_app/ohe.pkl', 'rb'))
 
 def predict_genre(overview):
     data = []
     overview = tokenize(overview)
     data.append(overview)
     df = pd.DataFrame(data, columns=['overview'])
-    print(data)
-    vect = TfidfVectorizer(max_features=1500, ngram_range=(1, 15))
-    vect_features = vect.transform([data])
-    tfidf_df = pd.DataFrame(vect_features.toarray(), columns=vect.get_feature_names_out())
-    genre = model.predict(tfidf_df)
-    return genre
+    vect_features = vect.transform(df['overview'])
+    prediction = model.predict(vect_features)
+    genre = ohe.inverse_transform(prediction)[0]
+    return genre[0]
 
 def tokenize(text):
     stop_words = set(stopwords.words('english'))
